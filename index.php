@@ -261,6 +261,14 @@
 	});
 	
 // /////////////////////////////////
+// UPDATE - COURSE
+// /////////////////////////////////
+    $router->map("POST","/courses/[i:course_id]", function($course_id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
+		response( $GLOBALS["UTILITIES"]["courses"]->update($course_id) );
+	});
+	
+// /////////////////////////////////
 // DELETE - COURSE
 // /////////////////////////////////
     $router->map("DELETE","/courses/[i:course_id]", function($course_id){

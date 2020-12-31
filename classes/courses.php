@@ -30,6 +30,24 @@ class Courses{
 	}
 	
 // //////////////////////////////////////////////////
+// UPDATE COURSE
+// //////////////////////////////////////////////////
+	public function update($course_id){
+		
+		if(!isset($_POST["name"])){
+			return array(
+				"code" => 400,
+				"error" => true,
+				"data" => "The body of your post requires a 'name' parameter"
+			);
+		} else {
+			$name = $_POST["name"];
+		}
+		
+		return $GLOBALS["UTILITIES"]["database"]->query("post_update_course",array(array("id" => $course_id, "name" => $name)));
+	}
+	
+// //////////////////////////////////////////////////
 // DELETE COURSE
 // //////////////////////////////////////////////////
 	public function delete($course_id){
