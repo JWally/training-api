@@ -1,0 +1,1 @@
+insert into link_users_to_roles(user_id, role_id) values(:user_id, :role_id);

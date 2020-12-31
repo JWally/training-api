@@ -1,0 +1,1 @@
+insert into link_roles_to_courses(course_id, role_id) values(:course_id, :role_id);
