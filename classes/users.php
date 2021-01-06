@@ -66,6 +66,68 @@ class User{
 	public function unlinkUserToRole($user_id, $role_id){
 		return $GLOBALS["UTILITIES"]["database"]->query("delete_user_to_role",array(array("user_id" => $user_id, "role_id" => $role_id)));
 	}
+	
+// //////////////////////////////////////////////////
+// CREATE LINK => Courses
+// //////////////////////////////////////////////////
+	public function linkUserToCourse($user_id, $course_id){
+		//
+		// N.B. This creates a link if one does not exist
+		// *and* returns the record id for future use...
+		//
+		
+		//
+		// Clean this up a little so that
+		//
+		$data = $GLOBALS["UTILITIES"]["database"]->query("post_user_to_course",array(array("user_id" => $user_id, "course_id" => $course_id),array("user_id" => $user_id, "course_id" => $course_id)));
+	
+		// Since we're doing a double-query :-(
+		// and only need the second result
+		// lets just return that part of the return object
+		// assuming its given...
+		
+		if(isset($data["results"])){
+			if(gettype($data["results"]) == "array" && count($data["results"]) == 2){
+				$data["results"] = array($data["results"][1]);
+			}
+		}
+	
+		return $data;
+
+	}
+	
+// //////////////////////////////////////////////////
+// DELETE LINK => Courses
+// //////////////////////////////////////////////////
+	public function unlinkUserToCourse($user_id, $course_id){
+		return $GLOBALS["UTILITIES"]["database"]->query("delete_user_to_course",array(array("user_id" => $user_id, "course_id" => $course_id)));
+	}
+	
+// //////////////////////////////////////////////////
+// SET USER'S STATUS ON A COURSE
+// //////////////////////////////////////////////////
+	public function updateCourseStatus($user_id, $course_id){
+		
+		$data = $this->linkUserToCourse($user_id, $course_id);
+		
+		//OMFG NO!
+		$id = $data["results"][0]["data"][0]["_id"];
+		
+		return $GLOBALS["UTILITIES"]["database"]->query("eav_link_users_to_courses",array(array("id" => $id, "value" => $_POST["checked"])));
+		
+	}
+
+// //////////////////////////////////////////////////
+// FANCY => GET A USER'S COURSE LISTING
+// //////////////////////////////////////////////////
+	public function getUsersCourses($user_id = null){
+		if($user_id == null){
+			return $GLOBALS["UTILITIES"]["database"]->query("get_user_courses",array(array("user_id" => "")));
+		} else {
+			return $GLOBALS["UTILITIES"]["database"]->query("get_user_courses",array(array("user_id" => $user_id)));
+		}
+	}	
+	
 
 }
 ?>

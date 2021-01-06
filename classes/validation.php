@@ -138,6 +138,21 @@
 		}
 		
 		
+	public function resetSession(){
+		session_unset();
+		session_destroy();
+		session_start();
+		
+		$_SESSION["session-eol"] = strtotime('tomorrow midnight');
+		$_SESSION["validation-status"] = "new";
+		
+		return array(
+			"error" => false,
+			"code" => 200,
+			"data" => "good to go"
+		);
+	}	
+		
 	//
 	// So this is what the API'll use to send mail
 	// We'll assume that an e-mail address is in the POST variable
@@ -167,12 +182,20 @@
 		// 4.) This sounds way more complicated than it really is. Its not
 		//     that bad.
 		//
+		
+			//
+			// Reset our session so we don't have to deal with any shenanigans...
+			//
+			$this->resetSession();
+		
 
 			if(isset($_POST["inputEmail"])){
 				//
 				// Make sure they are with argenticmgmt.net or .com
 				//
 				if(preg_match("/\@argenticmgmt\.(net|com)/",strtolower($_POST["inputEmail"]))){
+					
+					
 
 					//
 					// Load a bunch of variables into the user's session
@@ -190,6 +213,14 @@
 					//
 					// Let's try sending the user an e-mail
 					//
+					$link_url = "";
+					$link_url .= $this->config["domain"];
+					$link_url .= $this->config["root-url"];
+					$link_url .= "/validate?hash=$hash&__redirect__=";
+					$link_url .= $this->config["domain"];
+					$link_url .= "/training";
+					
+					
 					$mail = $this->send(
 						array($_SESSION["email-address"]), 
 						"Here Is Your Validation Link...", 
@@ -198,14 +229,14 @@
 						false,
 						"ez_template",
 						array(
-							"link" => $this->config["root-url"] . "/validate?hash=" . $hash
+							"link" => $link_url
 						)
 					);
 					
 					return array(
 						"code" => 200,
 						"error" => false,
-						"data" => NULL
+						"data" => $_SESSION
 					);
 					
 				} else {
@@ -259,7 +290,7 @@
 					//
 					//
 					
-					$GLOBALS["UTILITIES"]["users"]->create($_SESSION["email-address"]);
+					$GLOBALS["UTILITIES"]["user"]->create($_SESSION["email-address"]);
 					$this->loadRoles();
 					
 					return $this->getSelfStatus();
@@ -301,8 +332,8 @@
 				
 				$_SESSION["roles"] = array();
 				
-				forEach($data["data"][0] as $data){
-					$_SESSION["roles"][$data["role_name"]] = true;
+				forEach($data["results"]["data"] as $key => $val){
+					$_SESSION["roles"][$val["role_name"]] = true;
 				}
 				
 				//
@@ -344,12 +375,7 @@
 				// Uh-oh, the session is stale...
 				// nuke it, and reset
 				//
-				session_unset();
-				session_destroy();
-				session_start();
-				
-				$_SESSION["session-eol"] = strtotime('tomorrow midnight');
-				$_SESSION["validation-status"] = "new";
+				$this->resetSession();
 			} else {
 				//
 				// Do nothing else clause...
@@ -361,8 +387,7 @@
 			// We're gonna set a session and maybe tag you
 			// with some crap...
 			//
-			$_SESSION["session-eol"] = strtotime('tomorrow midnight');
-			$_SESSION["validation-status"] = "new";
+				$this->resetSession();
 		}
 		
 		//error_log(var_export($_SESSION));
@@ -382,6 +407,12 @@
 	//
 	public function authorize($roles = NULL){
 		header("content-type: application/json");	
+		
+		
+		//
+		// Make sure shit is kept real...
+		//
+		$this->getSelfStatus();
 		
 		//
 		// First, make sure the session is valid. If not,

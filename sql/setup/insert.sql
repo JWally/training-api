@@ -3,9 +3,9 @@ insert into `roles`(`name`) values('general'),('admin');;
 
 -- CREATE ME, A NAME, I CALL MY SELF
 insert into `users`(`email`) values ('justin@argenticmgmt.net');;
-insert into `users`(`email`) values ('steve@argenticmgmt.net');;
-insert into `users`(`email`) values ('Larry@argenticmgmt.net');;
-insert into `users`(`email`) values ('jimmy@argenticmgmt.net');;
+insert into `users`(`email`) values ('larry@argenticmgmt.net');;
+insert into `users`(`email`) values ('curly@argenticmgmt.net');;
+insert into `users`(`email`) values ('moe@argenticmgmt.net');;
 
 -- I WANT TO BE AN ADMIN
 
@@ -32,3 +32,13 @@ insert into `courses`(`name`) values
 ('NUCL 410 Introduction to Reactor Theory and Applications'),
 ('NUCL 449 Senior Design Proposal'),
 ('NUCL 450 Design in Nuclear Engineering');;
+
+
+--
+-- GIVE EVERY COURSE THE ROLE OF GENERAL FOR DEMO
+insert into link_roles_to_courses(course_id, role_id)
+    select
+        _id,
+        (select _id from roles where name = 'general')
+    
+    from courses;;

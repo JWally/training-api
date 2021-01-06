@@ -55,6 +55,8 @@
 	$GLOBALS["UTILITIES"]["user"] = new User();
 	$GLOBALS["UTILITIES"]["roles"] = new Roles();
 	$GLOBALS["UTILITIES"]["courses"] = new Courses();
+
+
 	
 // //////////////////////////////////
 //
@@ -89,6 +91,15 @@
 // ////////////////////////////////////////////////////////////////////////////
 	
 // /////////////////////////////////
+// RESET THE USER'S SESSION
+// /////////////////////////////////
+    $router->map("GET","/validate/reset", function(){
+		$data = $GLOBALS["UTILITIES"]["validation"]->resetSession();
+		response($data);
+	});
+	
+	
+// /////////////////////////////////
 // USER GIVES US AN E-MAIL ADDRESS, WE SEND THEM AN E-MAIL WITH A HASH AND WHAT NOT...
 // /////////////////////////////////
     $router->map("POST","/validate", function(){
@@ -116,7 +127,7 @@
 // /////////////////////////////////
 // GET USER'S CURRENT VALIDATION STATUS
 // /////////////////////////////////
-    $router->map("GET","/validation/status", function(){
+    $router->map("GET","/validate/status", function(){
 		response( $GLOBALS["UTILITIES"]["validation"]->getSelfStatus() );
 	});
 
@@ -182,6 +193,41 @@
     $router->map("GET","/user/[email:user]/roles", function($user){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
 		response( $GLOBALS["UTILITIES"]["user"]->getUserRoles($user) );
+	});
+	
+// /////////////////////////////////
+// GET LISTING OF USERS COURSES
+// /////////////////////////////////
+    $router->map("GET","/users/[email:user_id]/courses/", function($user_id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
+		response( $GLOBALS["UTILITIES"]["user"]->getUsersCourses($user_id) );
+	});
+
+// /////////////////////////////////
+// LINK USER TO COURSE
+// /////////////////////////////////
+    $router->map("POST","/users/[email:user_id]/courses/[i:course_id]", function($user_id, $course_id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
+		response( $GLOBALS["UTILITIES"]["user"]->linkUserToCourse($user_id, $course_id) );
+	});
+	
+// /////////////////////////////////
+// UNLINK USER TO COURSE
+// /////////////////////////////////
+    $router->map("DELETE","/users/[email:user_id]/courses/[i:course_id]", function($user_id, $course_id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
+		response( $GLOBALS["UTILITIES"]["user"]->unlinkUserToCourse($user_id, $course_id) );
+	});
+	
+
+// //////////////////////////////////
+//
+//  UPDATE A USER'S STATUS ON A COURSE
+//
+// //////////////////////////////////
+    $router->map("POST","/users/[email:user_id]/courses/[i:course_id]/status", function($user_id, $course_id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
+		response( $GLOBALS["UTILITIES"]["user"]->updateCourseStatus($user_id, $course_id) );
 	});
 	
 
@@ -297,8 +343,6 @@
 
 
 
-
-
 	
 	
 // /////////////////////////////////
@@ -315,16 +359,13 @@
 function response($data){
 	header("content-type: application/json");
 	http_response_code($data["code"]);
-	/*
-	if(isset($data["code"])){
-		unset($data["code"]);
-	}
 	
-	if(isset($data["error"])){
-		unset($data["error"]);
+	if(isset($_GET["__redirect__"])){
+		echo json_encode($data);		
+		header("Location: " . $_GET["__redirect__"]);
+	} else {
+		echo json_encode($data);			
 	}
-	*/
-	echo json_encode($data);
 }
 
 

@@ -67,6 +67,7 @@
 			}
 			
 			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->db->exec( 'PRAGMA foreign_keys = ON;' );
 			
 		}
 		
