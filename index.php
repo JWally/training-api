@@ -11,13 +11,13 @@
 	session_start();
     
 
-    require_once realpath(__DIR__ . "./classes/router.php");
-	require_once realpath(__DIR__ . "./classes/database.php");
+    require_once realpath(__DIR__ . "/classes/router.php");
+	require_once realpath(__DIR__ . "/classes/database.php");
 	
-	require_once realpath(__DIR__ . "./classes/validation.php");
-	require_once realpath(__DIR__ . "./classes/users.php");
-	require_once realpath(__DIR__ . "./classes/roles.php");
-	require_once realpath(__DIR__ . "./classes/courses.php");
+	require_once realpath(__DIR__ . "/classes/validation.php");
+	require_once realpath(__DIR__ . "/classes/users.php");
+	require_once realpath(__DIR__ . "/classes/roles.php");
+	require_once realpath(__DIR__ . "/classes/courses.php");
 	
 // //////////////////////////////////
 //

@@ -322,35 +322,43 @@
 	//
 	//
 		public function loadRoles(){
-		
-			//
-			// Collect data from the database
-			//
-			$data = $GLOBALS["UTILITIES"]["database"]->query("get_user_roles",array(array("email" => $_SESSION["email-address"])));
-		
-			if($data["error"] == false){
+			if(isset($_SESSION["email-address"])){
 				
-				$_SESSION["roles"] = array();
-				
-				forEach($data["results"]["data"] as $key => $val){
-					$_SESSION["roles"][$val["role_name"]] = true;
+				//
+				// Collect data from the database
+				//
+				$data = $GLOBALS["UTILITIES"]["database"]->query("get_user_roles",array(array("email" => $_SESSION["email-address"])));
+			
+				if($data["error"] == false){
+					
+					$_SESSION["roles"] = array();
+					
+					forEach($data["results"]["data"] as $key => $val){
+						$_SESSION["roles"][$val["role_name"]] = true;
+					}
+					
+					//
+					// And for good measure, we'll put our 
+					// e-mail as a role too...
+					//
+					$_SESSION["roles"][$_SESSION["email-address"]] = true;
+					
+					return array(
+						"code" => 200,
+						"error" => false,
+						"data" => NULL
+					);
+					
+				} else {
+					return $data;
 				}
-				
-				//
-				// And for good measure, we'll put our 
-				// e-mail as a role too...
-				//
-				$_SESSION["roles"][$_SESSION["email-address"]] = true;
-				
+			} else {
 				return array(
 					"code" => 200,
 					"error" => false,
 					"data" => NULL
 				);
-				
-			} else {
-				return $data;
-			}
+			}				
 		}
 
 
@@ -387,7 +395,7 @@
 			// We're gonna set a session and maybe tag you
 			// with some crap...
 			//
-				$this->resetSession();
+			$this->resetSession();
 		}
 		
 		
