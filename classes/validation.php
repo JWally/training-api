@@ -138,7 +138,7 @@
 		}
 		
 		
-	public function resetSession(){
+		public function resetSession(){
 		session_unset();
 		session_destroy();
 		session_start();
@@ -389,6 +389,11 @@
 			//
 				$this->resetSession();
 		}
+		
+		
+		// Load up all of the roles
+		$this->loadRoles();
+		
 		
 		//error_log(var_export($_SESSION));
 		return array(

@@ -1,2 +1,2 @@
 delete from courses
-where _id = :id;
+where _id = :course_id;

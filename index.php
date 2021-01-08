@@ -147,15 +147,15 @@
 // ////////////////////////////////////////////////////////////////////////////
 
 // /////////////////////////////////
-// CREATE - USER
+// USER - CREATE
 // /////////////////////////////////
     $router->map("POST","/users/[email:user_id]", function($user_id){
-		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
+		$GLOBALS["UTILITIES"]["validation"]->authorize(array("admin","SELF"));
 		response( $GLOBALS["UTILITIES"]["user"]->create($user_id) );
 	});
 	
 // /////////////////////////////////
-// RENDER - LIST USERS
+// USERS - LIST
 // /////////////////////////////////
     $router->map("GET","/users", function(){
 		$GLOBALS["UTILITIES"]["validation"]->authorize();
@@ -163,7 +163,7 @@
 	});
 	
 // /////////////////////////////////
-// DELETE - USER
+// USER - DELETE
 // /////////////////////////////////
     $router->map("DELETE","/users/[email:user_id]", function($user_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -172,7 +172,7 @@
 
 
 // /////////////////////////////////
-// LINK USER TO ROLE
+// USER => ROLE - CREATE LINK
 // /////////////////////////////////
     $router->map("POST","/users/[email:user_id]/roles/[i:role_id]", function($user_id, $role_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -180,7 +180,7 @@
 	});
 	
 // /////////////////////////////////
-// UNLINK USER TO ROLE
+// USER => ROLE - DELETE LINK
 // /////////////////////////////////
     $router->map("DELETE","/users/[email:user_id]/roles/[i:role_id]", function($user_id, $role_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -188,23 +188,23 @@
 	});
 
 // /////////////////////////////////	
-// GET USER ROLES
+// USER => ROLES - LIST
 // /////////////////////////////////
     $router->map("GET","/user/[email:user]/roles", function($user){
-		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
+		$GLOBALS["UTILITIES"]["validation"]->authorize(array("admin","SELF"));
 		response( $GLOBALS["UTILITIES"]["user"]->getUserRoles($user) );
 	});
 	
 // /////////////////////////////////
-// GET LISTING OF USERS COURSES
+// USER => COURSES - LIST
 // /////////////////////////////////
     $router->map("GET","/users/[email:user_id]/courses/", function($user_id){
-		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
+		$GLOBALS["UTILITIES"]["validation"]->authorize(array("admin","SELF"));
 		response( $GLOBALS["UTILITIES"]["user"]->getUsersCourses($user_id) );
 	});
 
 // /////////////////////////////////
-// LINK USER TO COURSE
+// USER => COURSE - LINK
 // /////////////////////////////////
     $router->map("POST","/users/[email:user_id]/courses/[i:course_id]", function($user_id, $course_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -212,7 +212,7 @@
 	});
 	
 // /////////////////////////////////
-// UNLINK USER TO COURSE
+// USER => COURSE - UNLINK
 // /////////////////////////////////
     $router->map("DELETE","/users/[email:user_id]/courses/[i:course_id]", function($user_id, $course_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -221,12 +221,10 @@
 	
 
 // //////////////////////////////////
-//
-//  UPDATE A USER'S STATUS ON A COURSE
-//
+//  USER => COURSE - UPDATE STATUS
 // //////////////////////////////////
     $router->map("POST","/users/[email:user_id]/courses/[i:course_id]/status", function($user_id, $course_id){
-		$GLOBALS["UTILITIES"]["validation"]->authorize("admin","SELF");
+		$GLOBALS["UTILITIES"]["validation"]->authorize(array("admin","SELF"));
 		response( $GLOBALS["UTILITIES"]["user"]->updateCourseStatus($user_id, $course_id) );
 	});
 	
@@ -248,7 +246,7 @@
 
 
 // /////////////////////////////////	
-// GET - LIST ROLES
+// ROLES - LIST
 // /////////////////////////////////
     $router->map("GET","/roles", function(){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -256,7 +254,7 @@
 	});
 	
 // /////////////////////////////////	
-// POST - CREATE ROLES
+// ROLE - CREATE
 // /////////////////////////////////
     $router->map("POST","/roles", function(){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -264,16 +262,15 @@
 	});
 	
 // /////////////////////////////////	
-// POST - UPDATE ROLES  *** DEPRECATED - TOO DANGEROUS FOR NAMED RIGHTS ON SOMETHING THIS SIMPLE ***
-// IF YOU SCREW UP NAMING A RIGHT, YOU HAVE TO DELETE IT
+// ROLE - UPDATE
 // /////////////////////////////////
-//    $router->map("POST","/roles/[i:id]", function($id){
-//		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
-//		response( $GLOBALS["UTILITIES"]["roles"]->update($id) );
-//	});
+    $router->map("POST","/roles/[i:id]", function($id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
+		response( $GLOBALS["UTILITIES"]["roles"]->update($id) );
+	});
 	
 // /////////////////////////////////	
-// DELETE - DELETE ROLES
+// ROLE - DELETE
 // /////////////////////////////////
     $router->map("DELETE","/roles/[i:id]", function($id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -283,15 +280,19 @@
 
 
 // ////////////////////////////////////////////////////////////////////////////
+
 // ////////////////////////////////////////////////////////////////////////////
+
 // COURSE FUNCTIONS
+
 // ////////////////////////////////////////////////////////////////////////////
+
 // ////////////////////////////////////////////////////////////////////////////
 	
 
 
 // /////////////////////////////////
-// CREATE - COURSE
+// COURSE - CREATE
 // /////////////////////////////////
     $router->map("POST","/courses", function(){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -299,7 +300,7 @@
 	});
 	
 // /////////////////////////////////
-// RENDER - LIST COURSES
+// COURSE - LIST
 // /////////////////////////////////
     $router->map("GET","/courses", function(){
 		$GLOBALS["UTILITIES"]["validation"]->authorize();
@@ -307,15 +308,23 @@
 	});
 	
 // /////////////////////////////////
-// UPDATE - COURSE
+// COURSE - UPDATE NAME
 // /////////////////////////////////
-    $router->map("POST","/courses/[i:course_id]", function($course_id){
+    $router->map("POST","/courses/[i:course_id]/name", function($course_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
-		response( $GLOBALS["UTILITIES"]["courses"]->update($course_id) );
+		response( $GLOBALS["UTILITIES"]["courses"]->update($course_id, "name") );
 	});
 	
 // /////////////////////////////////
-// DELETE - COURSE
+// COURSE - UPDATE DUE-DATE
+// /////////////////////////////////
+    $router->map("POST","/courses/[i:course_id]/duedate", function($course_id){
+		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
+		response( $GLOBALS["UTILITIES"]["courses"]->update($course_id, "duedate") );
+	});
+	
+// /////////////////////////////////
+// COURSE - DELETE
 // /////////////////////////////////
     $router->map("DELETE","/courses/[i:course_id]", function($course_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -324,7 +333,7 @@
 
 
 // /////////////////////////////////
-// LINK COURSE TO ROLE
+// COURSE => ROLE - LINK
 // /////////////////////////////////
     $router->map("POST","/courses/[i:course_id]/roles/[i:role_id]", function($course_id, $role_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
@@ -332,7 +341,7 @@
 	});
 	
 // /////////////////////////////////
-// UNLINK COURSE TO ROLE
+// COURSE => ROLE - unLINK
 // /////////////////////////////////
     $router->map("DELETE","/courses/[i:course_id]/roles/[i:role_id]", function($course_id, $role_id){
 		$GLOBALS["UTILITIES"]["validation"]->authorize("admin");
