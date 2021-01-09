@@ -22,7 +22,7 @@
 			// Open our config file, and turn it into a PHP object
 			// (no error handling because...fuggit...)
 			//
-			$this->config = json_decode(file_get_contents("C:/phpconf/training/config.json"),true);
+			$this->config = json_decode(file_get_contents("/phpconf/training/config.json"),true);
 		}
 
 
