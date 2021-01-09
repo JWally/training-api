@@ -12,11 +12,11 @@ class User{
 		//
 		// Make sure the e-mail address is argentic
 		//
-		if(!preg_match("/\@argenticmgmt\.(net|com)/",$user_id)){
+		if(!preg_match("/\@argentic.*\.(net|com)/",$user_id)){
 			return array(
 				"code" => 400,
 				"error" => true,
-				"data" => "The User's ID has to be {{whatever}}@argenticmgmt.com"
+				"data" => "The User's ID has to be {{whatever}}@argentic.com"
 			);
 		}
 		

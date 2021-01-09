@@ -193,7 +193,7 @@
 				//
 				// Make sure they are with argenticmgmt.net or .com
 				//
-				if(preg_match("/\@argenticmgmt\.(net|com)/",strtolower($_POST["inputEmail"]))){
+				if(preg_match("/\@argentic.*\.(net|com)/",strtolower($_POST["inputEmail"]))){
 					
 					
 
