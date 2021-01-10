@@ -19,7 +19,7 @@ class Roles{
 				"data" => "Your request needs a `name`"
 			);
 		} else {
-			return $GLOBALS["UTILITIES"]["database"]->query("post_roles_create",array(array("name" => $_POST["name"])));
+			return $GLOBALS["UTILITIES"]["database"]->query("post_roles_create",array(array("name" => strtolower($_POST["name"]))));
 		}
 	}
 	
@@ -55,7 +55,15 @@ class Roles{
 // DELETE - a role out of the system by row-id
 // //////////////////////////////////////////////////
 	public function destroy($id){
-		return $GLOBALS["UTILITIES"]["database"]->query("delete_roles",array(array("id" => $id)));
+		if($id !== "1" && $id !== "2"){
+			return $GLOBALS["UTILITIES"]["database"]->query("delete_roles",array(array("id" => $id)));
+		} else {
+			return array(
+				"error" => true,
+				"code" => 400,
+				"data" => "You dan't delete 'admin' or 'general' roles"
+			);
+		}
 	}
 }
 ?>
