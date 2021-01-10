@@ -7,6 +7,10 @@
 
 	// Make sure sessions are started and our Time is CST
 	date_default_timezone_set('America/Chicago');
+	
+	ini_set('session.gc_maxlifetime',strtotime('tomorrow midnight') - time());
+	
+	
 	// Globally start session
 	session_start();
     
