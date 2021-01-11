@@ -22,6 +22,9 @@
 		// This will be the database we work with...
 		private $db;
 		
+		// Make sure we're working with read-only
+		private $readOnly;
+		
 // /////////////////////////////////////////////
 //
 // Instantiation function to run some checks, and 
@@ -54,19 +57,34 @@
 // Here is where we connect to s***
 //
 // /////////////////////////////////////////////
-		public function connect($dbName){
+		public function connect($dbName, $readOnly = false){
 
 			// Open said DB
 			// and store it on our class level attr
 			//
-			$this->db = new PDO("sqlite:$this->dbPath/$dbName.sqlite");
+			if($readOnly){
+				
+				// Flag It
+				$this->readOnly = true;
+				
+				// Cleaner pdo args array
+				$pdos = array(
+					PDO::SQLITE_ATTR_OPEN_FLAGS => PDO::SQLITE_OPEN_READONLY
+				);
+				//$this->db = new PDO("sqlite:$this->dbPath/$dbName.sqlite", null, null, [PDO::SQLITE_ATTR_OPEN_FLAGS => PDO::SQLITE_OPEN_READONLY]);
+				
+				$this->db = new PDO("sqlite:$this->dbPath/$dbName.sqlite", null, null, $pdos);
+			} else {
+				$this->db = new PDO("sqlite:$this->dbPath/$dbName.sqlite");				
+			}
 			
 			if(!$this->db){
 				throw new Error( $this->db->lastErrorMsg() );
 				die();
 			}
 			
-			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			get_defined_constants (true);
+			
 			$this->db->exec( 'PRAGMA foreign_keys = ON;' );
 			
 		}
@@ -237,6 +255,112 @@
 				);		
 
 
+		}
+		
+		
+// /////////////////////////////////////////////
+//
+// Method to let the user run raw SQL against our database.
+// .
+// ..
+// ...
+// Yup, this is not just stupid, its pretty goddamn stupid.
+// But...in my defense, given where this thing *SHOULD* live (behind a firewall)
+// and we're allowing it in Read-Only mode
+// and the user base is probably not wanting to break this thing via sql-injection
+// and the typical user probably isn't sophisticated enough to intentionally abuse this
+//
+// net-net; the threat model is pretty low and this is probably an acceptable risk to take
+// given the utility it provides
+//
+// that said, this is dangerous as fuck, so be careful please...
+//
+// /////////////////////////////////////////////
+		public function raw($query){
+			//
+			// Kill this thing if we ever try and launch it out of readOnly mode
+			//
+			if(!$this->readOnly){
+				return array(
+					"code" => 500,
+					"error" => true,
+					"data" => "Method limited to read-only instances",
+					"etc" => "Method limited to read-only instances"
+				);
+				die();
+			}
+			
+			
+			//
+			// Prepare 
+			//
+			
+			$results = array();
+			
+			try{
+				$stmt = $this->db->prepare($query);
+			} catch(PDOException $e){
+				$this->db->rollback();
+				//
+				// ///////////////////////////> RETURN
+				//
+				return array(
+					"code" => 400,
+					"error" => true,
+					"data" => $this->db->errorInfo(),
+					"etc" => "Failed on `prepare`"
+				);
+				die();
+			}
+			
+			//
+			// Execute the statement, and try falling over with grace...
+			//
+			try{
+				
+				$stmt->execute();
+				
+				$tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);	
+			
+				
+				$results []= array(
+					"data" => $tmp,
+					"last_insert_id" => $this->db->lastInsertId(),
+					"affected_row_count" => $stmt->rowCount()
+				);
+				
+
+			
+			} catch(PDOException $e){
+				$this->db->rollback();
+				//
+				// ///////////////////////////> RETURN
+				//
+				return array(
+					"code" => 400,
+					"error" => true,
+					"data" => $stmt->errorInfo(),
+					"etc" => "failed on execute"
+				);
+				die();
+			}
+			
+			
+			// //////////////////////////////////
+			//
+			// /////////
+			// //////////////////////////> RETURN
+			// /////////
+			//
+			// //////////////////////////////////
+			
+			$results = $results[0];
+			return array(
+				"code" => 200,
+				"error" => false,
+				"results" => $results
+			);		
+			
 		}
 	}
 

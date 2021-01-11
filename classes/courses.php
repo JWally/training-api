@@ -26,7 +26,7 @@ class Courses{
 // RENDER COURSES
 // //////////////////////////////////////////////////
 	public function list(){
-		return $GLOBALS["UTILITIES"]["database"]->query("get_courses");
+		return $GLOBALS["UTILITIES"]["database_read"]->query("get_courses");
 	}
 	
 // //////////////////////////////////////////////////

@@ -27,7 +27,7 @@ class Roles{
 // RENDER - all roles in the system
 // //////////////////////////////////////////////////
 	public function list(){
-		$data = $GLOBALS["UTILITIES"]["database"]->query("get_roles");
+		$data = $GLOBALS["UTILITIES"]["database_read"]->query("get_roles");
 		return $data;
 	}
 	

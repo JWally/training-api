@@ -29,7 +29,7 @@ class User{
 // RENDER USERS
 // //////////////////////////////////////////////////
 	public function list(){
-		return $GLOBALS["UTILITIES"]["database"]->query("get_users");
+		return $GLOBALS["UTILITIES"]["database_read"]->query("get_users");
 	}
 	
 // //////////////////////////////////////////////////
@@ -50,7 +50,7 @@ class User{
 			$user = $_SESSION["email-address"];
 		}
 
-		return $GLOBALS["UTILITIES"]["database"]->query("get_user_roles",array(array("email" => $user)));
+		return $GLOBALS["UTILITIES"]["database_read"]->query("get_user_roles",array(array("email" => $user)));
 	}
 	
 // //////////////////////////////////////////////////
